@@ -82,7 +82,7 @@ def get_gallery( soup):
         print(f"No Gallery: {li}")
     return gallery
 
-def get_address(self, soup):
+def get_address(soup):
     section = soup.find('section', id='address_tab')
     address_divs = section.find_all('div', class_='schoolAddress')
     address = {
