@@ -85,12 +85,13 @@ def get_gallery( soup):
 def get_address(soup):
     section = soup.find('section', id='address_tab')
     address_divs = section.find_all('div', class_='schoolAddress')
-    address = {
-        'address': address_divs[0].text.replace('\t', '').replace('\n', ''),
-        'email': address_divs[1].text,
-        'website': address_divs[2].text,
-        'phone_no': address_divs[3].text 
-    }
+    for address in address_divs:
+        address = {
+            'address': address.text.replace('\t', '').replace('\n', '\b') if address else 'N/A',
+            'email': address.text if address else 'N/A',
+            'website': address.text if address else 'N/A',
+            'phone_no': address.text if address else 'N/A' 
+        }
     return address
     
 def get_all_page_data( url, nxt, count, data):
@@ -108,7 +109,7 @@ def get_all_page_data( url, nxt, count, data):
     get_all_page_data(url, nxt, count, data)
         
 def get_first_100( url, count, data):
-    if count == 1:
+    if count == 100:
         return data
     count += 1
     curr_url = f"{url}?page={count}"
