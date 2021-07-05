@@ -75,7 +75,9 @@ def get_gallery( soup):
         for pic_url in pic_container:
             gallery.append(pic_url['href'])
     except:
-        print("No Gallery")
+        nav = soup.find('nav', class_="breadcrumb-nav breadcrumb-banner")
+        li = nav.find_all('li')[-1].text
+        print(f"No Gallery: {li}")
     return gallery
     
 def get_all_page_data( url, nxt, count, data):
