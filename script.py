@@ -83,23 +83,20 @@ def get_gallery( soup):
     return gallery
 
 def get_address(soup):
+    temp = []
     section = soup.find('section', id='address_tab')
     address_divs = section.find_all('div', class_='schoolAddress')
-    for address in address_divs:
-        address = {
-            'address': address.text.replace('\t', '').replace('\n', '\b') if address else 'N/A',
-            'email': address.text if address else 'N/A',
-            'website': address.text if address else 'N/A',
-            'phone_no': address.text if address else 'N/A' 
-        }
-    return address
+    for ad in address_divs:
+        temp.append(ad.text if ad else 'N/A')
+    temp[0] = temp[0].replace('\n', '\b').replace('\t', '')
+    return dict(zip(['address', 'email', 'website', 'phone_no'], temp))
     
 def get_all_page_data( url, nxt, count, data):
     if nxt == False:
         return data
     count += 1
     curr_url = f"{url}?page={count}"
-    
+    address_list
     school_list = get_school_list(curr_url)
     for item in school_list:
         details = get_school_details(item['link'])
