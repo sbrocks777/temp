@@ -14,7 +14,12 @@ def get_school_list( url):
     soup = get_html_doc(url)
     sections = soup.find_all('section', class_='item-list')
     pagination = soup.find('ul', class_='pagination')
-    nxt = pagination.find_all('li', class_='page-item')[-1].text[0:4] == 'Next'
+    
+    if pagination:
+        nxt = pagination.find_all('li', class_='page-item')[-1].text[0:4] == 'Next'
+    else:
+        nxt = False
+
     for section in sections:
         data.append({
             'title': section.find('h4').text,
@@ -96,14 +101,19 @@ def get_all_page_data( url, nxt, count, data):
         return data
     count += 1
     curr_url = f"{url}?page={count}"
-    address_list
+
     school_list = get_school_list(curr_url)
-    for item in school_list:
-        details = get_school_details(item['link'])
-        data.append({item['title']: details})
-        nxt = item['next']
-    print(curr_url)
-    get_all_page_data(url, nxt, count, data)
+    if len(school_list) > 0:
+        for item in school_list:
+            details = get_school_details(item['link'])
+            details.update({'school_name': item['title']})
+            data.append(details)
+            nxt = item['next']
+        print(curr_url)
+    else:
+        nxt = False
+        print('No more pages available.')
+    return get_all_page_data(url, nxt, count, data)
         
 def get_first_100( url, count, data):
     if count == 100:
@@ -120,6 +130,6 @@ def get_first_100( url, count, data):
     return get_first_100(url, count, data)
 
 
-first_100 = get_first_100(base_url, 0, [])
+first_100 = get_all_page_data(base_url, True, 100, [])
 df = pd.DataFrame(first_100)
-df.to_csv('db.csv', index=False)
+df.to_csv('db_after_1k.csv', index=False)
